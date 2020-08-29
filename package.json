@@ -1,0 +1,30 @@
+{
+  "name": "image-repository-be",
+  "version": "1.0.0",
+  "description": "A back-end app designed to manage an image repository on Amazon AWS S3",
+  "main": "index.js",
+  "server": "nodemon index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exploratum/image_repo_be.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/exploratum/image_repo_be/issues"
+  },
+  "homepage": "https://github.com/exploratum/image_repo_be#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "knex": "^0.21.5",
+    "pg": "^8.3.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
