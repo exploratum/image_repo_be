@@ -21,12 +21,9 @@ router.get("/request-upload-url", async (req, res) => {
         ContentType: "image/jpeg"
     }
 
-
     try {
         url = await new Promise((resolve, reject) => {
-
             s3.getSignedUrl('putObject', parameters, (err, url) => {
-    
                 if (err) {
                     console.log(err)
                     reject(err)
@@ -36,12 +33,12 @@ router.get("/request-upload-url", async (req, res) => {
                 }
             })
         })
+
         res.status(200).json({url: url})
     }
 
     catch {
-        console.log("An error happened")
-        res.status(500).json({error: "can not get upload url"})
+        res.status(500).json({error: "can not get upload url from aws"})
     }
     
 })
