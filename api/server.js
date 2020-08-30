@@ -6,11 +6,15 @@ server.use(express.json());
 const cors = require('cors');
 server.use(cors());
 
+const helmet = require("helmet")
+server.use(helmet());
+
 server.use(logger);
 
 server.get('/', (req, res) => {
     res.status(200).send("Image Repository API")
 })
+
 
 
 /**************************************/
