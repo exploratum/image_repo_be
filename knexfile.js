@@ -1,43 +1,40 @@
-// Update with your config settings.
+const pg = require(pg);
+
+//uncomment the line below if you are working on a heroku server
+//pg.defaults.ssl = true;
 
 module.exports = {
 
   development: {
-    client: 'sqlite3',
-    connection: {
-      filename: './dev.sqlite3'
-    }
-  },
+    client: "pg",
+    useNullAsDefault: true,
 
-  staging: {
-    client: 'postgresql',
     connection: {
-      database: 'my_db',
-      user:     'username',
-      password: 'password'
+      host: process.env.POSTGRESS_DEV_HOST,
+      port: process.env.POSTGRESS_DEV_PORT,
+      user: process.env.POSTGRESS_DEV_USER,
+      password: process.env.POSTGRESS_DEV_PASSWORD,
+      database: process.env.POSTGRESS_DEV_DATABASE
     },
-    pool: {
-      min: 2,
-      max: 10
-    },
+
     migrations: {
-      tableName: 'knex_migrations'
+      directory: "./database/development/migrations"
+    },
+
+    seeds: {
+      directory: "./database/development/seeds"
     }
   },
 
   production: {
-    client: 'postgresql',
-    connection: {
-      database: 'my_db',
-      user:     'username',
-      password: 'password'
-    },
-    pool: {
-      min: 2,
-      max: 10
-    },
+    client: 'pg',
+    connection: process.env.DATABASE_URL,
+    pool: {min: 2, max: 10},
     migrations: {
-      tableName: 'knex_migrations'
+      directory: "./database/development/migrations"
+    },
+    seeds: {
+      directory: "./database/development/seeds"
     }
   }
 
