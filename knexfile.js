@@ -1,7 +1,9 @@
-const pg = require(pg);
+const pg = require("pg");
 
 //uncomment the line below if you are working on a heroku server
 //pg.defaults.ssl = true;
+
+require('dotenv').config();
 
 module.exports = {
 
@@ -28,6 +30,8 @@ module.exports = {
 
   production: {
     client: 'pg',
+    useNullAsDefault: true,
+
     connection: process.env.DATABASE_URL,
     pool: {min: 2, max: 10},
     migrations: {
