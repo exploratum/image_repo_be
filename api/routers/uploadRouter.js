@@ -11,11 +11,13 @@ router.get("/request-upload-url", async (req, res) => {
     const imgName = req.query.imgName;
 
     const s3 = new AWS.S3({
-        region: 'us-west-1'
+        accessKeyId: process.env.S3_ACCESS_KEY_ID,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+        region: process.env.S3_REGION
     })
 
     const parameters = {
-        Bucket: process.env.BUCKET_NAME,
+        Bucket: process.env.S3_BUCKET_NAME,
         Key: imgName,
         Expires: 60,
         ContentType: "image/jpeg"
