@@ -8,7 +8,7 @@ const AWS = require("aws-sdk");
 
 router.get("/request-upload-url", async (req, res) => {
     
-    const imgName = req.query.imgName;
+    const imgKey = req.query.imgKey;
 
     const s3 = new AWS.S3({
         accessKeyId: process.env.S3_ACCESS_KEY_ID,
@@ -18,9 +18,10 @@ router.get("/request-upload-url", async (req, res) => {
 
     const parameters = {
         Bucket: process.env.S3_BUCKET_NAME,
-        Key: imgName,
+        Key: imgKey,
         Expires: 60,
         ContentType: "image/jpeg"
+        
     }
 
     try {
