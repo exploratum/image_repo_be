@@ -1,15 +1,39 @@
 const express = require("express");
 const router = express.Router();
 const AWS = require("aws-sdk");
+const imageModel = require("../models/imageModel");
 
 /*******************************************************************************************************/
-/*               Provide presigned url allowing user to directly upload image to S3 bucket             */
+/*                Save image information to database                                                   */
+/*                Respond with presigned url allowing user to directly upload image to S3 bucket       */
 /*******************************************************************************************************/
 
-router.get("/request-upload-url", async (req, res) => {
-    
-    const imgKey = req.query.imgKey;
+router.post("/request-upload-url", async (req, res) => {
+  
+    const image = {
+        imgKey: req.body.imgKey,
+        category: req.body.category,
+        owner: req.body.owner,
+        description: req.body.description
+    }
 
+
+    // Save image information into database
+    try {
+        const id = await imageModel.add(image);
+        console.log("returned id: ", id)
+    }
+    catch(err) {
+        console.log(err.message)
+        if (err.message.includes("images_imgkey_unique")) {
+            res.status(422).json("this filename already exist, please choose a different filename")
+        }
+        else {
+            res.status(500).json({'error': "unable to save image information to database"})
+        }
+    }
+
+    // Request pre signed url to AWS
     const s3 = new AWS.S3({
         accessKeyId: process.env.S3_ACCESS_KEY_ID,
         secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
@@ -18,10 +42,9 @@ router.get("/request-upload-url", async (req, res) => {
 
     const parameters = {
         Bucket: process.env.S3_BUCKET_NAME,
-        Key: imgKey,
+        Key: req.body.imgKey,
         Expires: 60,
         ContentType: "image/jpeg"
-        
     }
 
     try {
@@ -41,7 +64,7 @@ router.get("/request-upload-url", async (req, res) => {
     }
 
     catch {
-        res.status(500).json({error: "can not get upload url from aws"})
+        res.status(500).json({'error': "Did not receive upload url from aws"})
     }
     
 })

@@ -36,7 +36,7 @@ server.get('/', (req, res) => {
     res.status(200).send("Image Repository API")
 })
 
-server.get("/request-upload-url", uploadRouter)
+server.post("/request-upload-url", uploadRouter)
 
 
 
