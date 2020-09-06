@@ -20,11 +20,9 @@ router.post("/request-upload-url", async (req, res) => {
 
     // Save image information into database
     try {
-        const id = await imageModel.add(image);
-        console.log("returned id: ", id)
+        await imageModel.add(image);
     }
     catch(err) {
-        console.log(err.message)
         if (err.message.includes("images_imgkey_unique")) {
             res.status(422).json("this filename already exist, please choose a different filename")
         }

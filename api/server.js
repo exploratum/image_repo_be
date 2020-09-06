@@ -20,12 +20,14 @@ server.use(logger);
 /*                                          Import routers                                             */
 /*******************************************************************************************************/
 const uploadRouter = require("./routers/uploadRouter.js")
+const getImageListRouter = require("./routers/getImageListRouter")
 
 /*******************************************************************************************************/
 /*                                      Connect routers to server                                      */
 /*******************************************************************************************************/
 
 server.use("/api/routers/uploadRouter", uploadRouter);
+server.use("/api/routers/getImageListRouter", getImageListRouter)
 
 
 /*******************************************************************************************************/
@@ -37,6 +39,8 @@ server.get('/', (req, res) => {
 })
 
 server.post("/request-upload-url", uploadRouter)
+
+server.get("/list", getImageListRouter)
 
 
 
