@@ -1,5 +1,5 @@
 /*******************************************************************************************************/
-/*                                      Install dependancies                                           */
+/*                                        Import dependancies                                          */
 /*******************************************************************************************************/
 
 const express = require('express');
@@ -17,17 +17,19 @@ server.use(helmet());
 server.use(logger);
 
 /*******************************************************************************************************/
-/*                                          Import routers                                             */
+/*                                            Import routers                                           */
 /*******************************************************************************************************/
 const uploadRouter = require("./routers/uploadRouter.js")
 const getImageListRouter = require("./routers/getImageListRouter")
+const removeImageRouter = require("./routers/removeImageRouter")
 
 /*******************************************************************************************************/
-/*                                      Connect routers to server                                      */
+/*                                        Connect routers to server                                    */
 /*******************************************************************************************************/
 
 server.use("/api/routers/uploadRouter", uploadRouter);
 server.use("/api/routers/getImageListRouter", getImageListRouter)
+server.use("/remove", removeImageRouter);
 
 
 /*******************************************************************************************************/
@@ -42,6 +44,7 @@ server.post("/request-upload-url", uploadRouter)
 
 server.get("/list", getImageListRouter)
 
+server.delete("/remove", removeImageRouter)
 
 
 /*******************************************************************************************************/

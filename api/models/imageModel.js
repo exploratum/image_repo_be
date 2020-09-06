@@ -1,7 +1,6 @@
 const db = require("../../config/dbConfig");
 
 function getAll() {
-    console.log("*********in Model!!***********")
     return db('images');
 }
 
