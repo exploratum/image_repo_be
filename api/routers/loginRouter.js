@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
-const secrets = require("../../config/secrets")
+const generateToken = require("../../auth/generateToken")
+
+/****************************************************************************/
+/*                     User logs in and receives Json Web Token             */
+/****************************************************************************/
 
 router.post("/users/login", async (req, res) => {
     const {username, password} = req.body;
@@ -21,22 +24,6 @@ router.post("/users/login", async (req, res) => {
         res.status(500).json({"error": "could not log you in"})
     }
 })
-
-/****************************************************************************/
-/*                              Token generator                             */
-/****************************************************************************/
-function generateToken(user) {
-    const payload = {
-        subject: user.id,
-        username: user.username
-    }
-
-    const options = {
-        expiresIn: '1d'
-    };
-
-    return jwt.sign(payload, secrets.jwtSecret, options)
-}
 
 
 
