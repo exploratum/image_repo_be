@@ -2,13 +2,14 @@ const express = require("express");
 const router = express.Router();
 const AWS = require("aws-sdk");
 const imageModel = require("../models/imageModel");
+const restrict = require("../../auth/restrict-middleware")
 
 /*******************************************************************************************************/
 /*                Save image information to database                                                   */
 /*                Respond with presigned url allowing user to directly upload image to S3 bucket       */
 /*******************************************************************************************************/
 
-router.post("/request-upload-url", async (req, res) => {
+router.post("/request-upload-url", restrict, async (req, res) => {
   
     const image = {
         imgKey: req.body.imgKey,
