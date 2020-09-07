@@ -1,9 +1,9 @@
+require('dotenv').config();
 const pg = require("pg");
 
 //uncomment the line below if you are working on a heroku server
-//pg.defaults.ssl = true;
+pg.defaults.ssl = true;
 
-require('dotenv').config();
 
 module.exports = {
 

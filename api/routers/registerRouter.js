@@ -15,9 +15,9 @@ router.post("/users/register", async (req, res) => {
         console.log(user)
 
 
-        const id = await userModel.register(user );
+        const id = await userModel.register(user);
         console.log("id: ", id);
-        res.status(200).json({"id": id});
+        res.status(201).json({"id": id});
     }
     catch(err) {
         res.status(500).json({"error": "Could not create new user", err})

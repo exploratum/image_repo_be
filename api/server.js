@@ -22,7 +22,7 @@ server.use(logger);
 const uploadRouter = require("./routers/uploadImageRouter.js");
 const getImageListRouter = require("./routers/getImageListRouter");
 const removeImageRouter = require("./routers/removeImageRouter");
-const userRouter = require("./routers/userRouter");
+const registerRouter = require("./routers/registerRouter");
 const loginRouter = require("./routers/loginRouter");
 
 /*******************************************************************************************************/
@@ -32,7 +32,7 @@ const loginRouter = require("./routers/loginRouter");
 server.use("/api/routers/uploadRouter", uploadRouter);
 server.use("/api/routers/getImageListRouter", getImageListRouter);
 server.use("/remove", removeImageRouter);
-server.use("/users/register", userRouter);
+server.use("/users/register", registerRouter);
 server.use("users/login", loginRouter);
 
 /*******************************************************************************************************/
@@ -46,7 +46,7 @@ server.get('/', (req, res) => {
 server.post("/request-upload-url", uploadRouter);
 server.get("/list", getImageListRouter);
 server.delete("/remove", removeImageRouter);
-server.post("/users/register", userRouter);
+server.post("/users/register", registerRouter);
 server.post("/users/login", loginRouter);
 
 

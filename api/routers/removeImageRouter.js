@@ -52,7 +52,7 @@ router.delete("/remove", async (req, res) => {
             })
         })
 
-        res.status(200).json({"success": "image was successfully deleted"})
+        res.status(200).json({"message": "image was successfully deleted"})
     }
 
     catch {

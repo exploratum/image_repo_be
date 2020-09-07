@@ -14,7 +14,7 @@ router.post("/users/login", async (req, res) => {
         const user = await userModel.findBy({username});
         if (user && bcrypt.compareSync(password, user.password)) {
             const token = generateToken(user);
-            res.status(200).json({"message": `welcome ${user.username}`, "token": token})
+            res.status(200).json({"token": token})
         }
         else {
             res.status(401).json({"error": "Invalid credentials"})
