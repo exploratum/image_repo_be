@@ -1,7 +1,7 @@
 # Image Repository API
 
 An API designed to manage an image repository on Amazon AWS Simple Storage Service (S3).
-This API was built with Node.js and Express.js as the server. Data is saved in a PostgreSQL database
+This API was built with Node.js, Express.js as the server, and PostgreSQL for database
 
 Current features include getting the list of images in storage, upload new images or delete existing ones
 
@@ -39,7 +39,7 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/users/
 
 ***
 ***
-## POST: User logs in and receive Json Web Token
+## POST: User login to receive Json Web Token for API call authorization
 - /users/login
 ### required fields:
 - email
@@ -68,7 +68,7 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/users/
 ## POST: post image information to receive presigned url for direct upload to S3
 - /request-upload-url
 ### required fields:
-- imgKey (S3 object key)
+- imgKey (filename = S3 object key)
 - category
 - owner
 - description
@@ -138,7 +138,7 @@ curl --location --request GET 'localhost:5000/list' \
 ## POST: post image information to receive presigned url for direct upload to S3
 - /remove
 ### required fields:
-- imgKey (filename / key in S3 bucket)
+- imgKey (filename = S3 object key)
 
 ### returns:
 - success message
