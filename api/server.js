@@ -19,35 +19,35 @@ server.use(logger);
 /*******************************************************************************************************/
 /*                                            Import routers                                           */
 /*******************************************************************************************************/
-const uploadRouter = require("./routers/uploadRouter.js")
-const getImageListRouter = require("./routers/getImageListRouter")
-const removeImageRouter = require("./routers/removeImageRouter")
-const userRouter = require("./routers/userRouter")
+const uploadRouter = require("./routers/uploadImageRouter.js");
+const getImageListRouter = require("./routers/getImageListRouter");
+const removeImageRouter = require("./routers/removeImageRouter");
+const userRouter = require("./routers/userRouter");
+const loginRouter = require("./routers/loginRouter");
 
 /*******************************************************************************************************/
 /*                                        Connect routers to server                                    */
 /*******************************************************************************************************/
 
 server.use("/api/routers/uploadRouter", uploadRouter);
-server.use("/api/routers/getImageListRouter", getImageListRouter)
+server.use("/api/routers/getImageListRouter", getImageListRouter);
 server.use("/remove", removeImageRouter);
 server.use("/users/register", userRouter);
+server.use("users/login", loginRouter);
 
 /*******************************************************************************************************/
 /*                                              Endpoints                                              */
 /*******************************************************************************************************/
 
 server.get('/', (req, res) => {
-    res.status(200).send("Image Repository API")
+    res.status(200).send("Image Repository API");
 })
 
-server.post("/request-upload-url", uploadRouter)
-
-server.get("/list", getImageListRouter)
-
-server.delete("/remove", removeImageRouter)
-
-server.post("/users/register", userRouter)
+server.post("/request-upload-url", uploadRouter);
+server.get("/list", getImageListRouter);
+server.delete("/remove", removeImageRouter);
+server.post("/users/register", userRouter);
+server.post("/users/login", loginRouter);
 
 
 /*******************************************************************************************************/
@@ -59,4 +59,4 @@ function logger(req, res, next) {
     next();
 }
 
-module.exports = server
+module.exports = server;

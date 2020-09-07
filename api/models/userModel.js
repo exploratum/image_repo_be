@@ -1,10 +1,14 @@
 const db = require("../../config/dbConfig")
 
-function add(user) {
-    console.log("!!!!!!!! In Model !!!!!!!!")
+function register(user) {
     return db("users").insert(user, 'id')
 }
 
+function findBy(filter) {
+    return db("users").where(filter).first();
+}
+
 module.exports = {
-    add,
+    register,
+    findBy,
 }
