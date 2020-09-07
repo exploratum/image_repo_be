@@ -135,7 +135,7 @@ curl --location --request GET 'localhost:5000/list' \
 
 ***
 ***
-## DELETE: remove from database and S3
+## DELETE: remove nformation from database and image from S3
 - /remove
 ### required fields:
 - imgKey (filename = S3 object key)
