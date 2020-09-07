@@ -65,7 +65,7 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/users/
 }
 ***
 ***
-## POST: post image information to receive presigned url for direct upload to S3
+## POST: image information to receive presigned url for direct upload to S3
 - /request-upload-url
 ### required fields:
 - imgKey (filename = S3 object key)
@@ -135,7 +135,7 @@ curl --location --request GET 'localhost:5000/list' \
 
 ***
 ***
-## POST: post image information to receive presigned url for direct upload to S3
+## DELETE: remove image from database and S3
 - /remove
 ### required fields:
 - imgKey (filename = S3 object key)
