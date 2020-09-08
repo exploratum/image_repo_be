@@ -11,9 +11,13 @@ const generateToken = require("../../auth/generateToken")
 router.post("/users/login", async (req, res) => {
     const {username, password} = req.body;
     try {
+        console.log({username})
         const user = await userModel.findBy({username});
+        console.log(user)
+        let result = bcrypt.compareSync(password, user.password);
         if (user && bcrypt.compareSync(password, user.password)) {
             const token = generateToken(user);
+            console.log(token)
             res.status(200).json({"token": token})
         }
         else {
@@ -21,6 +25,7 @@ router.post("/users/login", async (req, res) => {
         }
     }
     catch(err) {
+        console.log(err)
         res.status(500).json({"error": "could not log you in"})
     }
 })
