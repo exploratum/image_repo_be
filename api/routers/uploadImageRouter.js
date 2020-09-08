@@ -43,7 +43,7 @@ router.post("/request-upload-url", restrict, async (req, res) => {
     const parameters = {
         Bucket: process.env.S3_BUCKET_NAME,
         Key: req.body.imgKey,
-        Expires: 900,
+        Expires: 3600,
         ContentType: "image/jpeg"
     }
 
