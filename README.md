@@ -1,9 +1,21 @@
 # Image Repository API
 
 An API designed to manage an image repository on Amazon AWS Simple Storage Service (S3).
-This API was built with Node.js, Express.js as the server, and PostgreSQL for database
+This API was built with Node.js, Express.js as the server, and PostgreSQL for the database
 
-Current features include getting the list of images in storage, upload new images or delete existing ones
+The image repository is managed by a server on Heroku. User authentication/authorisation, image metadata,
+and presigned urls are all managed on Heroku. The server will provide presigned urls that will allow the user
+to directly upload or download image to or from the repository.
+
+## Current features 
+- getting list of all images in storage
+- upload new images
+- delete existing ones
+
+##  future features
+- bulk upload and download
+- mechanism to ensure that image database on the server is synchronized with actual images in AWS S3
+- Multiuser management with private/public images
 
 The back end is hosted in Heroku at the following URL:
 - https://image-repository-be.herokuapp.com/
