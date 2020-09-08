@@ -28,6 +28,7 @@ router.post("/request-upload-url", restrict, async (req, res) => {
             res.status(422).json("this filename already exist, please choose a different filename")
         }
         else {
+            console.log(err)
             res.status(500).json({'error': "unable to save image information to database"})
         }
     }
@@ -50,7 +51,6 @@ router.post("/request-upload-url", restrict, async (req, res) => {
         url = await new Promise((resolve, reject) => {
             s3.getSignedUrl('putObject', parameters, (err, url) => {
                 if (err) {
-                    console.log(err)
                     reject(err)
                 }
                 else {
@@ -63,6 +63,7 @@ router.post("/request-upload-url", restrict, async (req, res) => {
     }
 
     catch {
+        console.log(err)
         res.status(500).json({'error': "Did not receive upload url from aws"})
     }
     

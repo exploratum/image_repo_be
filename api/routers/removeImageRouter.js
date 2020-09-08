@@ -24,6 +24,7 @@ router.delete("/remove", async (req, res) => {
         }
     }
     catch(err) {
+        console.log(err)
         res.status(500).json({"error": "Can not delete image from database"});
     }
 
@@ -55,7 +56,8 @@ router.delete("/remove", async (req, res) => {
         res.status(200).json({"message": "image was successfully deleted"})
     }
 
-    catch {
+    catch(err) {
+        console.log(err)
         res.status(500).json({'error': "Could not delete image"})
     }
 
