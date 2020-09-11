@@ -5,7 +5,7 @@ This API was built with Node.js, Express.js as the server, and PostgreSQL for th
 
 The image repository is managed by a server on Heroku. User authentication/authorisation, image metadata,
 and presigned urls are all managed on Heroku. The server will provide presigned urls that will allow the user
-to directly upload or download image to or from the repository.
+to directly upload or download image to or from the repository hosted on AWS S3.
 
 ## Current features 
 - getting list of all images in storage
@@ -14,13 +14,14 @@ to directly upload or download image to or from the repository.
 
 ##  future features
 - bulk upload and download
+- bulk delete
 - mechanism to ensure that image database on the server is synchronized with actual images in AWS S3
 - Multiuser management with private/public images
 
 The back end is hosted in Heroku at the following URL:
 - https://image-repository-be.herokuapp.com/
 
-The front end is currently under construction and the repository can be found at the following url:
+This project is a pure back end project. However there is also a front end project currently under construction that will be making use of this API. It can be found at the following url:
 - https://github.com/exploratum/image_repo
 
 # REST API
