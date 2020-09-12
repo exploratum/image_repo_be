@@ -8,34 +8,36 @@ const imageModel = require("../models/imageModel");
 
 /*******************************************************************************************************/
 /*                              Delete image information from database                                 */
-/*                              then delete image from S3 bucket                                       */
+/*                              Delete image from S3 bucket                                            */
 /*******************************************************************************************************/
 
 
 router.delete("/remove", async (req, res) => {
     
     const imgKeys = req.body.imgKeys;
-    console.log(imgKeys);
 
     const allPromisesArr = [];
-    const successfulPromisesArr = []
-    const failedPromisesArr = []
-
+    
     const s3 = new AWS.S3({
         accessKeyId: process.env.S3_ACCESS_KEY_ID,
         secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
         region: process.env.S3_REGION
     })
 
-    //Delete images in database asynchronously
+    //Run all asynchronous database delete functions and store results/promises in Array 
     for (let imgKey of imgKeys) {
-        console.log({"imgKey": imgKey})
         allPromisesArr.push(imageModel.remove(imgKey))
     }
  
-
+    //Once settled process all database delete promises
     Promise.allSettled(allPromisesArr)
+
         .then(results => {
+
+            const successfulPromisesArr = []
+            const failedPromisesArr = []
+
+            //Store all successful database deletes
             for (let result of results) {
                 let img = result.value[0];
                 if (result.status == 'fulfilled' && result.value.length == 1) {
@@ -43,29 +45,30 @@ router.delete("/remove", async (req, res) => {
                 }
             }
 
-            //Any image not in the successfulPromiseArr should be pushed to the failedPromiseArr
+            //Store all unsuccessful database deletes
             for (let img of imgKeys) {
                 if (!successfulPromisesArr.includes(img)) {
                     failedPromisesArr.push(img);
                 }
             }
-            console.log('all attempts: ', results);
-            console.log('successfulPromisesArr: ', successfulPromisesArr);
-            console.log('failedPromisesArr: ', failedPromisesArr);
 
+            return([successfulPromisesArr, failedPromisesArr])
+        })
 
-            
-            
+        .then(newResults => {
+
+            const [successfulPromisesArr, failedPromisesArr] = newResults;
             const imgPromisesArr = [];
 
+            //Run all asynchronous aws delete functions and store results/promises in Array 
             for (let img of successfulPromisesArr) {
+
                 imgPromisesArr.push(new Promise((resolve, reject) => {
                     const parameters = {
                         Bucket: process.env.S3_BUCKET_NAME,
                         Key: img,
                     }
-
-                    //response returns HTTP 204 and different header fields
+                    //AWS returns HTTP 204 and different header fields
                     s3.deleteObject(parameters, (err, response) => {
                         if (err) {
                             console.log(err)
@@ -78,13 +81,11 @@ router.delete("/remove", async (req, res) => {
                 }))
             }
 
-
+            //Once settled process all aws delete promises
             Promise.allSettled(imgPromisesArr)
                 .then(results => {
 
-                    console.log("***************************************")
-                    console.log("all images sent to aws for delete: ", results);
-
+                    // Process cases where aws delete function failed
                     for (let result in results) {
                         if (result.status == "rejected") {
                             let img = Object.values(result)[0].imgKey
@@ -93,82 +94,40 @@ router.delete("/remove", async (req, res) => {
                         }
                     }
                     
-
+                    // Process cases where all or some aws delete function were successful
                     if (failedPromisesArr.length == 0) {
                         res.status(200).json({"msg": "all requested deletions have been completed"});
                     }
                     else {
-                        const report = [];
-                        for (let failed of failedPromisesArr) {
-                            report.push({"msg": "delete failure", "img": failed})
-                        }
-                        for (let success of successfulPromisesArr) {
-                            report.push({"msg": "success", "img": success})
-                        }
-                        report.push({"metadata": {
-                            "failure(s)": failedPromisesArr.length,
-                            "success": successfulPromisesArr.length
-                        }})
-                        console.log('all succeeded database deletes: ', successfulPromisesArr);
-                        console.log('all failed database deletes: ', successfulPromisesArr);
-                        console.log("report: ", report)
+                        const report = createReport(successfulPromisesArr, failedPromisesArr);
                         res.status(207).json({"data": report})
                     }
                     
                 })
-        }
-    )
-
-
-/////////////////////////////////////////////////////////////
-
-
-    // // Delete information from database
-    // try {
-    //     const count = await imageModel.remove(imgKey);
-        
-    //     if (count == 0) {
-    //         res.status(409).json({"error": `${imgKey} does not exist`});
-    //     }
-    // }
-    // catch(err) {
-    //     console.log(err)
-    //     res.status(500).json({"error": "Can not delete image from database"});
-    // }
-
-    // //Delete image from S3
-    // const s3 = new AWS.S3({
-    //     accessKeyId: process.env.S3_ACCESS_KEY_ID,
-    //     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-    //     region: process.env.S3_REGION
-    // })
-
-    // const parameters = {
-    //     Bucket: process.env.S3_BUCKET_NAME,
-    //     Key: req.body.imgKey,
-    // }
-
-    // try {
-    //     del_response = await new Promise((resolve, reject) => {
-    //         s3.deleteObject(parameters, (err, del_response) => {
-    //             if (err) {
-    //                 console.log(err)
-    //                 reject(err)
-    //             }
-    //             else {
-    //                 resolve(del_response)
-    //             }
-    //         })
-    //     })
-
-    //     res.status(200).json({"message": "image was successfully deleted"})
-    // }
-
-    // catch(err) {
-    //     console.log(err)
-    //     res.status(500).json({'error': "Could not delete image"})
-    // }
+        })
 
 })
+/*******************************************************************************************************/
+/*                      function to create report on all failed and successful deletes                  */
+/*******************************************************************************************************/
+
+function createReport(successfulDeletes, failedDeletes) {
+
+    const report = [];
+    for (let img of failedDeletes) {
+        report.push({"msg": "delete failure", "img": img})
+    }
+    for (let img of successfulDeletes) {
+        report.push({"msg": "success", "img": img})
+    }
+    report.push({"metadata": {
+        "failure(s)": failedDeletes.length,
+        "success": successfulDeletes.length
+    }})
+    
+    return report
+}
+            
+
 
 module.exports = router;
