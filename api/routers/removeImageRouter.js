@@ -5,6 +5,7 @@ const router = express.Router();
 const AWS = require("aws-sdk");
 
 const imageModel = require("../models/imageModel");
+const restrict = require("../../auth/restrict-middleware")
 
 /*******************************************************************************************************/
 /*                              Delete image information from database                                 */
