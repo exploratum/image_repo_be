@@ -12,7 +12,7 @@ const imageModel = require("../models/imageModel");
 /*******************************************************************************************************/
 
 
-router.delete("/remove", async (req, res) => {
+router.delete("/remove", restrict, async (req, res) => {
     
     const imgKeys = req.body.imgKeys;
 
