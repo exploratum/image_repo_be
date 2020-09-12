@@ -9,24 +9,23 @@ to directly upload or download image to or from the repository hosted on AWS S3.
 
 ## Current features 
 - getting list of all images in storage
-- upload new images
-- delete existing ones
+- upload new images (one at a time)
+- delete existing ones (possiblity to delete in bulk)
 
 ##  future features
 - bulk upload and download
-- bulk delete
-- mechanism to ensure that image database on the server is synchronized with actual images in AWS S3
+- mechanism to ensure that image database on the server is synchronized with actual images in AWS S3 storage
 - Multiuser management with private/public images
 
 The back end is hosted in Heroku at the following URL:
 - https://image-repository-be.herokuapp.com/
 
-This project is a pure back end project. However there is also a front end project currently under construction that will be making use of this API. It can be found at the following url:
+This project is a pure back end project tested with Postman. However there is also a front end project currently under construction that will be making use of this API. It can be found at the following url:
 - https://github.com/exploratum/image_repo
 
 # REST API
 
-## POST: new user registration (Note that only an admin can create a new user)
+## POST: new user registration (protected route)
 - /users/register
 ### required fields:
 - email
@@ -38,6 +37,8 @@ This project is a pure back end project. However there is also a front end proje
 ### HEADERS
 - Content-Type
   - application/json
+- Authorization
+  - <token>
 ### PARAMS
 Bodyraw (text)
 {"username": "xxxxx", "password": "xxxxxxxx"}
@@ -93,7 +94,7 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/users/
 - Content-Type
   - application/json
 - Authorization
-  - token information
+  - <token>
 ### PARAMS
 Bodyraw (text)
 {"imgKey":"image1.jpg", "category": "landscape", "owner": "Thierry", "description": "cactus in Joshua park"}
@@ -148,7 +149,7 @@ curl --location --request GET 'localhost:5000/list' \
 
 ***
 ***
-## DELETE: remove nformation from database and image from S3
+## DELETE: remove nformation from database and image from S3 (protected route)
 - /remove
 ### required fields:
 - imgKey (filename = S3 object key)
@@ -159,6 +160,8 @@ curl --location --request GET 'localhost:5000/list' \
 ### HEADERS
 - Content-Type
   - application/json
+- Authorization
+  - <token>
 
 ### PARAMS
 Bodyraw (text)
@@ -171,3 +174,23 @@ curl --location --request DELETE 'https://image-repository-be.herokuapp.com/remo
 ### Example Response
 - 200 - OK
 - {"message": "image was successfully deleted"}
+or
+- 207 - Multi-Status
+- {
+    "data": [
+        {
+            "msg": "delete failure",
+            "img": "park1.jpg"
+        },
+        {
+            "msg": "success",
+            "img": "park2.jpg"
+        },
+        {
+            "metadata": {
+                "failure(s)": 1,
+                "success": 1
+            }
+        }
+    ]
+}
