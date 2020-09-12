@@ -10,7 +10,7 @@ to directly upload or download image to or from the repository hosted on AWS S3.
 ## Current features 
 - getting list of all images in storage
 - upload new images (one at a time)
-- delete existing ones (possiblity to delete in bulk)
+- delete existing images (bulk delete)
 
 ##  future features
 - bulk upload and download
