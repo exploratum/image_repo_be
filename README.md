@@ -14,9 +14,10 @@ to directly upload or download image to or from the repository hosted on AWS S3.
 
 ##  future features
 - bulk upload and download
-- mechanism to ensure that image database on the server is synchronized with actual images in AWS S3 storage
+- mechanism to ensure that image database on the server is fully synchronized with actual images in AWS S3 storage
 - thumbnail size images to be included when requesting image list
 - Multiuser management with private/public images
+- Emulate directories in S3 using path
 
 The back end is hosted in Heroku at the following URL:
 - https://image-repository-be.herokuapp.com/
