@@ -173,7 +173,7 @@ curl --location --request DELETE 'https://image-repository-be.herokuapp.com/remo
 
 ### Example Response
 - 200 - OK
-- {"message": "image was successfully deleted"}  
+- {"message": "all requested deletions have been completed"}  
 or  
 - 207 - Multi-Status
 - {
