@@ -11,7 +11,8 @@ function add(image) {
 function remove(imgKey) {
     return db('images')
     .where({imgKey})
-    .del();
+    .del().
+    returning('imgKey');
 }
 
 module.exports = {
