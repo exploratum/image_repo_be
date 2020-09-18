@@ -109,7 +109,8 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/reques
 ### Example Response
 - 200 - OK
 - {
-    "data": [
+    "data": 
+      [
         {
             "msg": "success",
             "image": {
@@ -124,34 +125,34 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/reques
                 "url": "https://image-repository-1.s3.us-west-1.amazonaws.com/image25.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content-    Type=image%2Fjpeg&Expires=1600410704&Signature=2uMYFO2aWOsdVtv9Hry8rKsjpZA%3D"
             }
         },
-    ]
-}  
+     ]
+ }  
   
-or  
+  or  
   
-207 Multi-Status  
-{
-    "data": [
-        {
-            "error": "There is already an image with this name",  
-            "img": "image24.jpg"  
-        },
-        {
-            "msg": "success",  
-            "image": {  
-                "imgKey": "image25.jpg",  
-                "url": "https://image-repository-1.s3.us-west-1.amazonaws.com/image25.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content-Type=image%2Fjpeg&Expires=1600410704&Signature=2uMYFO2aWOsdVtv9Hry8rKsjpZA%3D"
-            }
-        },  
-        {
-            "metadata": {
-                "aws failure(s)": 0,
-                "duplicates": 1,
-                "nonDuplicates": 1
-            }
-        }
-    ]
-}
+  207 Multi-Status  
+  {
+      "data": [
+          {
+              "error": "There is already an image with this name",  
+              "img": "image24.jpg"  
+          },
+          {
+              "msg": "success",  
+              "image": {  
+                  "imgKey": "image25.jpg",  
+                  "url": "https://image-repository-1.s3.us-west-1.amazonaws.com/image25.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content-Type=image%2Fjpeg&Expires=1600410704&Signature=2uMYFO2aWOsdVtv9Hry8rKsjpZA%3D"
+              }
+          },  
+          {
+              "metadata": {
+                  "aws failure(s)": 0,
+                  "duplicates": 1,
+                  "nonDuplicates": 1
+              }
+          }
+      ]
+  }
 
 ***
 ***
