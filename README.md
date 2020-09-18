@@ -40,7 +40,7 @@ This project is a pure back end project tested with Postman. However there is al
 - Content-Type
   - application/json
 - Authorization
-  - <token>
+  - token
 ### PARAMS
 Bodyraw (text)
 {"username": "xxxxx", "password": "xxxxxxxx"}
@@ -81,7 +81,7 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/users/
 }
 ***
 ***
-## POST: image information to receive presigned url for direct upload to S3
+## POST: image information to receive presigned urls for direct upload to S3
 - /request-upload-url
 ### required fields:
 - imgKey (filename = S3 object key)
@@ -90,13 +90,13 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/users/
 - description
 
 ### returns:
-- presigned url
+- presigned urls
 
 ### HEADERS
 - Content-Type
   - application/json
 - Authorization
-  - <token>
+  - token
 ### PARAMS
 Bodyraw (text)
 {"images": [{"imgKey":"image1.jpg", "category": "landscape", "owner": "Thierry", "description": "cactus in Joshua park"}, {"imgKey":"image2.jpg", "category": "landscape", "owner": "Thierry", "description": "Utah park"}]}
@@ -114,7 +114,7 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/reques
             "msg": "success",
             "image": {
                 "imgKey": "image25.jpg",
-                "url": "https://image-repository-1.s3.us-west-1.amazonaws.com/image25.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content-Type=image%2Fjpeg&Expires=1600410704&Signature=2uMYFO2aWOsdVtv9Hry8rKsjpZA%3D"
+                "url": "https://image-repository-1.s3.us-west-1.amazonaws.com/image25.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content Type=image%2Fjpeg&Expires=1600410704&Signature=2uMYFO2aWOsdVtv9Hry8rKsjpZA%3D"
             }
         },
         {
@@ -126,21 +126,23 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/reques
         },
     ]
 }  
+  
 or  
+  
 207 Multi-Status  
 {
     "data": [
         {
-            "error": "There is already an image with this name",
-            "img": "image24.jpg"
+            "error": "There is already an image with this name",  
+            "img": "image24.jpg"  
         },
         {
-            "msg": "success",
-            "image": {
-                "imgKey": "image25.jpg",
+            "msg": "success",  
+            "image": {  
+                "imgKey": "image25.jpg",  
                 "url": "https://image-repository-1.s3.us-west-1.amazonaws.com/image25.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content-Type=image%2Fjpeg&Expires=1600410704&Signature=2uMYFO2aWOsdVtv9Hry8rKsjpZA%3D"
             }
-        },
+        },  
         {
             "metadata": {
                 "aws failure(s)": 0,
@@ -204,7 +206,7 @@ curl --location --request GET 'localhost:5000/list' \
 - Content-Type
   - application/json
 - Authorization
-  - <token>
+  - token
 
 ### PARAMS
 Bodyraw (text)
