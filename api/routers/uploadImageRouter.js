@@ -1,3 +1,5 @@
+'use strict'
+
 const express = require("express");
 const router = express.Router();
 const AWS = require("aws-sdk");
@@ -10,63 +12,113 @@ const restrict = require("../../auth/restrict-middleware")
 /*******************************************************************************************************/
 
 router.post("/request-upload-url", restrict, async (req, res) => {
-  
-    const image = {
-        imgKey: req.body.imgKey,
-        category: req.body.category,
-        owner: req.body.owner,
-        description: req.body.description
-    }
 
+    const images = req.body.images
 
-    // Save image information into database
-    try {
-        await imageModel.add(image);
-    }
-    catch(err) {
-        if (err.message.includes("images_imgkey_unique")) {
-            res.status(422).json("this filename already exist, please choose a different filename")
-        }
-        else {
-            console.log(err)
-            res.status(500).json({'error': "unable to save image information to database"})
-        }
-    }
-
-    // Request pre signed url to AWS
     const s3 = new AWS.S3({
         accessKeyId: process.env.S3_ACCESS_KEY_ID,
         secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
         region: process.env.S3_REGION
     })
 
-    const parameters = {
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: req.body.imgKey,
-        Expires: 3600,
-        ContentType: "image/jpeg"
+    const uploadPromises = []
+
+
+    //Add images to database and store results/promises in Array 
+    for (let image of images) {
+        uploadPromises.push(imageModel.add(image));
     }
 
-    try {
-        url = await new Promise((resolve, reject) => {
-            s3.getSignedUrl('putObject', parameters, (err, url) => {
-                if (err) {
-                    reject(err)
+    //Process all database upload promises
+    Promise.allSettled(uploadPromises)
+        .then(results => {
+
+            const nonDuplicates = [];
+
+            // Store all valid imgKeys
+            for (let result of results) {
+                if(result.status == 'fulfilled') {
+                    let imgKey = result.value[0];
+                    nonDuplicates.push(imgKey)
                 }
-                else {
-                    resolve(url)
-                }
-            })
+            }
+
+            // Store duplicate imgKeys that can not be added to database
+            const duplicates = images
+                .filter(image => !(nonDuplicates.includes(image['imgKey'])))
+                .map(image => image['imgKey'])
+                
+            return([duplicates, nonDuplicates]);
+
         })
 
-        res.status(200).json({url: url})
-    }
+        .then(async newResults => {
 
-    catch {
-        console.log(err)
-        res.status(500).json({'error': "Did not receive upload url from aws"})
-    }
-    
+            const [duplicates, nonDuplicates] = newResults;
+
+            const success = [];
+            const failures = [];
+
+            for (let imgKey of nonDuplicates)  {
+                    const parameters = {
+                                Bucket: process.env.S3_BUCKET_NAME,
+                                Key: imgKey,
+                                Expires: 3600,
+                                ContentType: "image/jpeg"
+                            }
+                    const result = await new Promise((resolve, reject) => {
+                        s3.getSignedUrl('putObject', parameters, (err, url) => {
+                            if (err) {
+                                reject({"imgKey": imgKey, "error":err})
+                            }
+                            else {
+                                resolve({"imgKey": imgKey, "url": url})
+                            }
+                        })
+                    })
+        
+                    if (result.hasOwnProperty("url")) {
+                        success.push(result)
+                    }
+                    else {
+                        failures.push(result)
+                    }
+            }
+
+            if (duplicates.length == 0 && failures.length == 0) {
+                res.status(200).json({data: success})
+            }
+            else {
+                res.status(207).json({data: createReport(duplicates, failures, success)})
+            }
+
+        })
+
 })
+
+/*******************************************************************************************************/
+/*                 function to create report on all failed and successful upload requests              */
+/*******************************************************************************************************/
+
+function createReport(duplicatesArr, awsFailedArr, successArr) {
+
+    const report = [];
+    for (let imgKey of awsFailedArr) {
+        report.push({"error": "failed to get aws presigned url ", "img": imgKey})
+    }
+    for (let imgKey of duplicatesArr) {
+        report.push({"error": "There is already an image with this name", "img": imgKey})
+    }
+    for (let img of successArr) {
+        report.push({"msg": "success", "image": img })
+    }
+    report.push({"metadata": {
+        "aws failure(s)": awsFailedArr.length,
+        "duplicates": duplicatesArr.length,
+        "nonDuplicates": successArr.length
+    }})
+    
+    return report
+}
 
 module.exports = router;

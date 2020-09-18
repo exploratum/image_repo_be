@@ -4,8 +4,15 @@ function getAll() {
     return db('images');
 }
 
+function findByImgKey(imgKey) {
+    return db("images")
+    .where({imgKey: imgKey})
+    .select('imgKey')
+    .first()
+}
+
 function add(image) {
-    return db('images').insert(image,'id');
+    return db('images').insert(image,'imgKey');
 }
 
 function remove(imgKey) {
@@ -18,5 +25,6 @@ function remove(imgKey) {
 module.exports = {
     add,
     getAll,
+    findByImgKey,
     remove,
 }

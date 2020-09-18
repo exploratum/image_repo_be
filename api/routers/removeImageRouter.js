@@ -3,7 +3,6 @@
 const express = require("express");
 const router = express.Router();
 const AWS = require("aws-sdk");
-
 const imageModel = require("../models/imageModel");
 const restrict = require("../../auth/restrict-middleware")
 
@@ -11,7 +10,6 @@ const restrict = require("../../auth/restrict-middleware")
 /*                              Delete image information from database                                 */
 /*                              Delete image from S3 bucket                                            */
 /*******************************************************************************************************/
-
 
 router.delete("/remove", restrict, async (req, res) => {
     
@@ -30,7 +28,7 @@ router.delete("/remove", restrict, async (req, res) => {
         allPromisesArr.push(imageModel.remove(imgKey))
     }
  
-    //Once settled process all database delete promises
+    //Process all database delete promises
     Promise.allSettled(allPromisesArr)
 
         .then(results => {
@@ -40,9 +38,9 @@ router.delete("/remove", restrict, async (req, res) => {
 
             //Store all successful database deletes
             for (let result of results) {
-                let img = result.value[0];
+                let imgKey = result.value[0];
                 if (result.status == 'fulfilled' && result.value.length == 1) {
-                        successfulPromisesArr.push(img);
+                        successfulPromisesArr.push(imgKey);
                 }
             }
 
@@ -82,11 +80,11 @@ router.delete("/remove", restrict, async (req, res) => {
                 }))
             }
 
-            //Once settled process all aws delete promises
+            //Process all aws delete promises
             Promise.allSettled(imgPromisesArr)
                 .then(results => {
 
-                    // Process cases where aws delete function failed
+                    // Process failed deletes
                     for (let result in results) {
                         if (result.status == "rejected") {
                             let img = Object.values(result)[0].imgKey
@@ -95,13 +93,14 @@ router.delete("/remove", restrict, async (req, res) => {
                         }
                     }
                     
-                    // Process cases where all or some aws delete function were successful
+                    // All aws deletes successful
                     if (failedPromisesArr.length == 0) {
                         res.status(200).json({"msg": "all requested deletions have been completed"});
                     }
+                    // Some or all deletes failed
                     else {
                         const report = createReport(successfulPromisesArr, failedPromisesArr);
-                        res.status(207).json({"data": report})
+                        res.status(207).json({"report": report})
                     }
                     
                 })
@@ -109,7 +108,7 @@ router.delete("/remove", restrict, async (req, res) => {
 
 })
 /*******************************************************************************************************/
-/*                      function to create report on all failed and successful deletes                  */
+/*                      function to create report on all failed and successful deletes                 */
 /*******************************************************************************************************/
 
 function createReport(successfulDeletes, failedDeletes) {
