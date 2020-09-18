@@ -59,6 +59,7 @@ router.post("/request-upload-url", restrict, async (req, res) => {
             const success = [];
             const failures = [];
 
+            //request presigned urls for non duplicate imgKeys
             for (let imgKey of nonDuplicates)  {
                     const parameters = {
                                 Bucket: process.env.S3_BUCKET_NAME,
@@ -84,10 +85,11 @@ router.post("/request-upload-url", restrict, async (req, res) => {
                         failures.push(result)
                     }
             }
-
+            //all request are successful
             if (duplicates.length == 0 && failures.length == 0) {
                 res.status(200).json({data: success})
             }
+            //partial success or all failures
             else {
                 res.status(207).json({data: createReport(duplicates, failures, success)})
             }
