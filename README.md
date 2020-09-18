@@ -9,11 +9,11 @@ to directly upload or download image to or from the repository hosted on AWS S3.
 
 ## Current features 
 - getting list of all images in storage
-- upload new images (one at a time)
+- Provide presigned upload urls for user direct upload to AWS S3 (bulk upload)
 - delete existing images (bulk delete)
 
 ##  future features
-- bulk upload and download
+- bulk download
 - mechanism to ensure that image database on the server is fully synchronized with actual images in AWS S3 storage
 - thumbnail size images to be included when requesting image list
 - Multiuser management with private/public images
@@ -99,16 +99,57 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/users/
   - <token>
 ### PARAMS
 Bodyraw (text)
-{"imgKey":"image1.jpg", "category": "landscape", "owner": "Thierry", "description": "cactus in Joshua park"}
+{"images": [{"imgKey":"image1.jpg", "category": "landscape", "owner": "Thierry", "description": "cactus in Joshua park"}, {"imgKey":"image2.jpg", "category": "landscape", "owner": "Thierry", "description": "Utah park"}]}
 
 ### Example Request
 curl --location --request POST 'https://image-repository-be.herokuapp.com/request-upload-url' \
 --header 'Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJqZWN0IjoxLCJ1c2VybmFtZSI6InVzZXIxIiwiaWF0IjoxNTk5NDk3Mjc0LCJleHAiOjE1OTk1ODM2NzR9.zHjNGA2eoDXWQ_OaBIhJgGDSK9jiwiJApQHm94tQeYU' \
---data-raw '{"imgKey":"image1.jpg", "category": "landscape", "owner": "Thierry", "description": "cactus in Joshua park"}'
+--data-raw '{"images": [{"imgKey":"image1.jpg", "category": "landscape", "owner": "Thierry", "description": "cactus in Joshua park"}, {"imgKey":"image2.jpg", "category": "landscape", "owner": "Thierry", "description": "Utah park"}]}'
 
 ### Example Response
 - 200 - OK
-- {"url": "https://image-repository-1.s3.amazonaws.com/flower1.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content-Type=image%2Fjpeg&Expires=1599503076&Signature=cN131QQKt8ezmBL6%2FB40jlUmQrU%3D"}
+- {
+    "data": [
+        {
+            "msg": "success",
+            "image": {
+                "imgKey": "image25.jpg",
+                "url": "https://image-repository-1.s3.us-west-1.amazonaws.com/image25.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content-Type=image%2Fjpeg&Expires=1600410704&Signature=2uMYFO2aWOsdVtv9Hry8rKsjpZA%3D"
+            }
+        },
+        {
+            "msg": "success",
+            "image": {
+                "imgKey": "image26.jpg",
+                "url": "https://image-repository-1.s3.us-west-1.amazonaws.com/image25.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content-    Type=image%2Fjpeg&Expires=1600410704&Signature=2uMYFO2aWOsdVtv9Hry8rKsjpZA%3D"
+            }
+        },
+    ]
+}  
+or  
+207 Multi-Status  
+{
+    "data": [
+        {
+            "error": "There is already an image with this name",
+            "img": "image24.jpg"
+        },
+        {
+            "msg": "success",
+            "image": {
+                "imgKey": "image25.jpg",
+                "url": "https://image-repository-1.s3.us-west-1.amazonaws.com/image25.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content-Type=image%2Fjpeg&Expires=1600410704&Signature=2uMYFO2aWOsdVtv9Hry8rKsjpZA%3D"
+            }
+        },
+        {
+            "metadata": {
+                "aws failure(s)": 0,
+                "duplicates": 1,
+                "nonDuplicates": 1
+            }
+        }
+    ]
+}
 
 ***
 ***
