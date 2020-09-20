@@ -13,7 +13,7 @@ const restrict = require("../../auth/restrict-middleware")
 
 router.post("/request-upload-url", restrict, async (req, res) => {
 
-    const images = req.body.images
+    const images = req.body.data;
 
     const s3 = new AWS.S3({
         accessKeyId: process.env.S3_ACCESS_KEY_ID,
