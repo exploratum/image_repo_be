@@ -51,7 +51,7 @@ router.post("/request-upload-url", restrict, async (req, res) => {
             return([duplicates, nonDuplicates]);
 
         })
-
+        // Get presigned urls for images successfully logged in database
         .then(async newResults => {
 
             const [duplicates, nonDuplicates] = newResults;
