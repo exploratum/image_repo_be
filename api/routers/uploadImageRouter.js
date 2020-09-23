@@ -29,7 +29,7 @@ router.post("/", restrict, async (req, res) => {
         uploadPromises.push(imageModel.add(image));
     }
 
-    //Process all database upload promises
+    //Process all database write attempts
     Promise.allSettled(uploadPromises)
         .then(results => {
 
@@ -59,7 +59,7 @@ router.post("/", restrict, async (req, res) => {
             const success = [];
             const failures = [];
 
-            //request presigned urls for non duplicate imgKeys
+            //request presigned upload urls
             for (let imgKey of nonDuplicates)  {
                     const parameters = {
                         Bucket: process.env.S3_BUCKET_NAME,
@@ -70,7 +70,7 @@ router.post("/", restrict, async (req, res) => {
                     const result = await new Promise((resolve, reject) => {
                         s3.getSignedUrl('putObject', parameters, (err, url) => {
                             if (err) {
-                                reject({"imgKey": imgKey, "error":err})
+                                reject({"imgKey": imgKey, "error": err})
                             }
                             else {
                                 resolve({"imgKey": imgKey, "url": url})
@@ -116,8 +116,8 @@ function createReport(duplicatesArr, awsFailedArr, successArr) {
     }
     report.push({"metadata": {
         "aws failure(s)": awsFailedArr.length,
-        "duplicates": duplicatesArr.length,
-        "nonDuplicates": successArr.length
+        "images already exist": duplicatesArr.length,
+        "success": successArr.length
     }})
     
     return report
