@@ -11,7 +11,7 @@ const restrict = require("../../auth/restrict-middleware")
 /*                              Delete image from S3 bucket                                            */
 /*******************************************************************************************************/
 
-router.delete("/remove", restrict, async (req, res) => {
+router.delete("/", restrict, async (req, res) => {
     
     const imgKeys = req.body.imgKeys;
 

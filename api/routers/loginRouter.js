@@ -8,7 +8,7 @@ const generateToken = require("../../auth/generateToken")
 /*                     User logs in and receives Json Web Token             */
 /****************************************************************************/
 
-router.post("/users/login", async (req, res) => {
+router.post("/", async (req, res) => {
     const {username, password} = req.body;
     try {
         const user = await userModel.findBy({username});

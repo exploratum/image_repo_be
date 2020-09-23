@@ -11,7 +11,7 @@ const restrict = require("../../auth/restrict-middleware")
 /*                Respond with presigned url allowing user to directly upload image to S3 bucket       */
 /*******************************************************************************************************/
 
-router.post("/request-upload-url", restrict, async (req, res) => {
+router.post("/", restrict, async (req, res) => {
 
     const images = req.body.data;
 
@@ -62,11 +62,11 @@ router.post("/request-upload-url", restrict, async (req, res) => {
             //request presigned urls for non duplicate imgKeys
             for (let imgKey of nonDuplicates)  {
                     const parameters = {
-                                Bucket: process.env.S3_BUCKET_NAME,
-                                Key: imgKey,
-                                Expires: 3600,
-                                ContentType: "image/jpeg"
-                            }
+                        Bucket: process.env.S3_BUCKET_NAME,
+                        Key: imgKey,
+                        Expires: 3600,
+                        ContentType: "image/jpeg"
+                    }
                     const result = await new Promise((resolve, reject) => {
                         s3.getSignedUrl('putObject', parameters, (err, url) => {
                             if (err) {

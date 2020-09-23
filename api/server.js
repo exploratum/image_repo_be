@@ -19,7 +19,8 @@ server.use(logger);
 /*******************************************************************************************************/
 /*                                            Import routers                                           */
 /*******************************************************************************************************/
-const uploadRouter = require("./routers/uploadImageRouter.js");
+const uploadImageRouter = require("./routers/uploadImageRouter.js");
+const downloadImageRouter = require("./routers/downloadImageRouter")
 const getImageListRouter = require("./routers/getImageListRouter");
 const removeImageRouter = require("./routers/removeImageRouter");
 const registerRouter = require("./routers/registerRouter");
@@ -29,26 +30,20 @@ const loginRouter = require("./routers/loginRouter");
 /*                                        Connect routers to server                                    */
 /*******************************************************************************************************/
 
-server.use("/api/routers/uploadRouter", uploadRouter);
-server.use("/api/routers/getImageListRouter", getImageListRouter);
-server.use("/remove", removeImageRouter);
+server.use("/api/request-upload-url", uploadImageRouter);
+server.use("/api/request-download-url", downloadImageRouter)
+server.use("/api/list", getImageListRouter);
+server.use("/api/remove", removeImageRouter);
 server.use("/users/register", registerRouter);
-server.use("users/login", loginRouter);
+server.use("/users/login", loginRouter);
 
 /*******************************************************************************************************/
-/*                                              Endpoints                                              */
+/*                                              Endpoint at root                                       */
 /*******************************************************************************************************/
 
 server.get('/', (req, res) => {
     res.status(200).send("Image Repository API");
 })
-
-server.post("/request-upload-url", uploadRouter);
-server.get("/list", getImageListRouter);
-server.delete("/remove", removeImageRouter);
-server.post("/users/register", registerRouter);
-server.post("/users/login", loginRouter);
-
 
 /*******************************************************************************************************/
 /*                                      Custom Middleware for logging                                  */
