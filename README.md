@@ -230,7 +230,7 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/api/re
 ***
 ***
 ## GET: image list
-- /list
+- /api/list
 
 ### returns:
 - list of images with related information
@@ -269,7 +269,7 @@ curl --location --request GET 'localhost:5000/list' \
 ***
 ***
 ## DELETE: remove nformation from database and image from S3 (protected route)
-- /remove
+- /api/remove
 ### required fields:
 - imgKey (filename = S3 object key)
 
