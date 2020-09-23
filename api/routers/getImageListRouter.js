@@ -3,7 +3,7 @@ const router = express.Router();
 const imageModel = require("../models/imageModel")
 
 
-router.get("/list", async (req,res) => {
+router.get("/", async (req,res) => {
     try {
         const images = await imageModel.getAll();
         res.status(200).json({"images":images})

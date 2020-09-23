@@ -6,7 +6,7 @@ const userModel = require("../models/userModel");
 const restrict = require("../../auth/restrict-middleware")
 
 
-router.post("/users/register", restrict, async (req, res) => {
+router.post("/", restrict, async (req, res) => {
     
     const user = req.body;
 
