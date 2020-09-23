@@ -4,16 +4,16 @@ An API designed to manage an image repository on Amazon AWS Simple Storage Servi
 This API was built with Node.js, Express.js as the server, and PostgreSQL for the database
 
 The image repository is managed by a server on Heroku. User authentication/authorisation, image metadata,
-and presigned urls are all managed on Heroku. The server will provide presigned urls that will allow the user
+and getting presigned urls are all managed on Heroku. The server will provide presigned urls that will allow the user
 to directly upload or download image to or from the repository hosted on AWS S3.
 
 ## Current features 
 - getting list of all images in storage
 - Provide presigned upload urls for user direct upload to AWS S3 (bulk upload)
+- Provide presigned download urls for user direct downlaod to AWS S3 (bulk download)
 - delete existing images (bulk delete)
 
 ##  future features
-- bulk download
 - mechanism to ensure that image database on the server is fully synchronized with actual images in AWS S3 storage
 - thumbnail size images to be included when requesting image list
 - Multiuser management with private/public images
@@ -82,7 +82,7 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/users/
 ***
 ***
 ## POST: image information to receive presigned urls for direct upload to S3
-- /request-upload-url
+- /api/request-upload-url
 ### required fields:
 - imgKey (filename = S3 object key)
 - category
@@ -91,6 +91,7 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/users/
 
 ### returns:
 - presigned urls
+- information on failed attempts
 
 ### HEADERS
 - Content-Type
@@ -149,6 +150,78 @@ curl --location --request POST 'https://image-repository-be.herokuapp.com/reques
                   "aws failure(s)": 0,
                   "duplicates": 1,
                   "nonDuplicates": 1
+              }
+          }
+      ]
+  }
+
+***
+***
+
+## POST: image information to receive presigned urls for direct download from S3
+- /api/request-download-url
+### required fields:
+- imgKey (filename = S3 object key)
+- category
+- owner
+- description
+
+### returns:
+- presigned urls
+- information on failed attempts
+
+### HEADERS
+- Content-Type
+  - application/json
+- Authorization
+  - token
+### PARAMS
+Bodyraw (text)
+{"data": [{"imgKey":"image1.jpg"}, {"imgKey":"image2.jpg"}]}
+
+### Example Request
+curl --location --request POST 'https://image-repository-be.herokuapp.com/api/request-download-url' \
+--header 'Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJqZWN0IjoxLCJ1c2VybmFtZSI6InVzZXIxIiwiaWF0IjoxNTk5NDk3Mjc0LCJleHAiOjE1OTk1ODM2NzR9.zHjNGA2eoDXWQ_OaBIhJgGDSK9jiwiJApQHm94tQeYU' \
+--data-raw '{"images": [{"imgKey":"image1.jpg"}, {"imgKey":"image2.jpg"}]}'
+
+### Example Response
+- 200 - OK
+- {
+    "data": 
+      [
+        {
+                "imgKey": "image25.jpg",
+                "url": "https://image-repository-1.s3.us-west-1.amazonaws.com/image25.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content Type=image%2Fjpeg&Expires=1600410704&Signature=2uMYFO2aWOsdVtv9Hry8rKsjpZA%3D"
+            }
+        },
+        {
+                "imgKey": "image26.jpg",
+                "url": "https://image-repository-1.s3.us-west-1.amazonaws.com/image25.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content-    Type=image%2Fjpeg&Expires=1600410704&Signature=2uMYFO2aWOsdVtv9Hry8rKsjpZA%3D"
+            }
+        },
+     ]
+ }  
+  
+  or  
+  
+  207 Multi-Status  
+  {
+      "data": [
+          {
+              "error": "Image not found",  
+              "imgKey": "image24.jpg"  
+          },
+          {
+              "msg": "success",  
+              "imgKey": "image25.jpg",  
+              "url": "https://image-repository-1.s3.us-west-1.amazonaws.com/image25.jpg?AWSAccessKeyId=AKIA5CFIOJJW5ELMZPRA&Content-Type=image%2Fjpeg&Expires=1600410704&Signature=2uMYFO2aWOsdVtv9Hry8rKsjpZA%3D"
+              }
+          },  
+          {
+              "metadata": {
+                  "aws failure(s)": 0,
+                  "not found": 1,
+                  "success": 1
               }
           }
       ]
